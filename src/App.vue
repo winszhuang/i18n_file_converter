@@ -1,52 +1,62 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+import SelectorFolder from './components/SelectorFolder.vue'
+import SelectorTabs from './components/SelectorTabs.vue'
+import { TransformModeList } from './constants/default'
+
+const folderPath = ref('')
+const exportFolderPath = ref('')
+const mode = ref<Mode>(TransformModeList[0])
+const langList = ref<Mode[]>([])
+
+const execute = () => {
+  console.log('execute');
+}
+
 </script>
 
 <template>
-  <div class="logo-box">
-    <img style="height:140px;" src="./assets/electron.png" >
-    <span/>
-    <img style="height:140px;" src="./assets/vite.svg" >
-    <span/>
-    <img style="height:140px;" src="./assets/vue.png" >
-  </div>
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
-  <div class="static-public">
-    Place static files into the <code>/public</code> folder
-    <img style="width:77px;" :src="'./node.png'" >
+  <div class="flex flex-col items-stretch justify-between w-full h-screen px-6 py-10 font-mono">
+    <main>
+      <h1 
+        class="pb-8 text-4xl font-semibold">I18n File Converter
+      </h1>
+      <!-- 選擇資料夾 -->
+      <section class="mb-6">
+        <h4 class="mb-2 text-2xl">Main Folder</h4>
+        <SelectorFolder v-model:path="folderPath"/>
+      </section>
+  
+      <!-- 選擇基準語系 -->
+      <section class="mb-6">
+        <h4 class="mb-2 text-2xl">Base Language</h4>
+        <SelectorTabs 
+          :tabList="langList"
+          v-model:mode="mode"
+        />
+      </section>
+  
+      <!-- 選擇轉換模式 -->
+      <section class="mb-6">
+        <h4 class="mb-2 text-2xl">Mode</h4>
+        <SelectorTabs 
+          :tabList="TransformModeList"
+          v-model:mode="mode"
+        />
+      </section>
+  
+      <!-- 選擇輸出資料夾 -->
+      <section class="mb-16">
+        <h4 class="mb-2 text-2xl">Export</h4>
+        <SelectorFolder v-model:path="exportFolderPath"/>
+      </section>
+    </main>
+
+    <!-- 執行 -->
+    <button 
+      @click="execute"
+      class="px-6 py-3 text-3xl border-2 border-black rounded-lg hover:bg-slate-700 hover:text-white">
+      Execute
+    </button>
   </div>
 </template>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-.logo-box {
-  display: flex;
-  width: 100%;
-  justify-content: center;
-}
-.logo-box span {
-  width: 74px;
-}
-.static-public {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.static-public code {
-  background-color: #eee;
-  padding: 2px 4px;
-  margin: 0 4px;
-  border-radius: 4px;
-  color: #304455;
-}
-</style>
