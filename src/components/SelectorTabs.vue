@@ -8,12 +8,12 @@ const props = defineProps<{
     value: number
   }>
 }>()
-const emit = defineEmits(['update:mode'])
+const emit = defineEmits(['update:tabs'])
 
 const selectedTab = ref(0)
 
 const changeTab = (index: number) => {
-  emit('update:mode', props.tabList[index])
+  emit('update:tabs', props.tabList[index])
 }
 
 const borderClass = computed(() => 
@@ -44,7 +44,7 @@ const borderClass = computed(() =>
               selected ? ' bg-slate-300' : 'bg-white',
               borderClass(index)
             ]"
-            class="py-1.5 px-6 border-black border-2 flex-1 border-r-0"
+            class="flex-1 px-6 py-3 border-2 border-r-0 border-black hover:bg-slate-700 hover:text-white"
           >
             {{ item.key }}
           </button>

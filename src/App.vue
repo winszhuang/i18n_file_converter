@@ -1,17 +1,42 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import SelectorFolder from './components/SelectorFolder.vue'
 import SelectorTabs from './components/SelectorTabs.vue'
 import { TransformModeList } from './constants/default'
+import { getLangListByFolderPath } from './logic/helper'
+import { jsonToExcel, excelToJson } from './logic/index'
+import { TransformModeEnum } from './enums/mode.enum'
 
 const folderPath = ref('')
-const exportFolderPath = ref('')
+const folderPathError = ref('')
 const mode = ref<Mode>(TransformModeList[0])
+const baseLang = ref<Mode>()
 const langList = ref<Mode[]>([])
 
-const execute = () => {
-  console.log('execute');
+const execute = async () => {
+  const strategy = {
+    [TransformModeEnum.jsonToExcel]: () => jsonToExcel(
+      langList.value.map(item => item.key),
+      baseLang.value!.key,
+      folderPath.value
+    ),
+    [TransformModeEnum.excelToJson]: () => excelToJson()
+  }
+
+  const modeIndex = mode.value.value as TransformModeEnum
+  const result = await strategy[modeIndex]()
+  alert(result ? 'success' : 'fail')
 }
+
+watchEffect(async () => {
+  if (folderPath.value && folderPathError.value === '') {
+    const list = await getLangListByFolderPath(folderPath.value)
+    langList.value = list.map((item, index) => ({ key: item, value: index }))
+    return
+  } else {
+    langList.value = []
+  }
+})
 
 </script>
 
@@ -19,37 +44,57 @@ const execute = () => {
   <div class="flex flex-col items-stretch justify-between w-full h-screen px-6 py-10 font-mono">
     <main>
       <h1 
-        class="pb-8 text-4xl font-semibold">I18n File Converter
+        class="pb-8 text-4xl font-semibold text-slate-700">I18n File Converter
       </h1>
-      <!-- 選擇資料夾 -->
-      <section class="mb-6">
-        <h4 class="mb-2 text-2xl">Main Folder</h4>
-        <SelectorFolder v-model:path="folderPath"/>
-      </section>
-  
-      <!-- 選擇基準語系 -->
-      <section class="mb-6">
-        <h4 class="mb-2 text-2xl">Base Language</h4>
-        <SelectorTabs 
-          :tabList="langList"
-          v-model:mode="mode"
-        />
-      </section>
-  
+
       <!-- 選擇轉換模式 -->
-      <section class="mb-6">
-        <h4 class="mb-2 text-2xl">Mode</h4>
+      <section class="mb-8">
+        <h4 class="mb-2 text-2xl">Choose Mode</h4>
+        <div class="pl-4 mb-3 border-l-2 border-black bg-slate-100">
+          <span class="font-bold ">jsonToExcel</span>  : trans all language json files to single xlsx file <br>
+          <span class="font-bold ">excelToJson</span> : trans single xlsx file to all language json files
+        </div>
         <SelectorTabs 
           :tabList="TransformModeList"
-          v-model:mode="mode"
+          v-model:tabs="mode"
         />
       </section>
-  
-      <!-- 選擇輸出資料夾 -->
-      <section class="mb-16">
-        <h4 class="mb-2 text-2xl">Export</h4>
-        <SelectorFolder v-model:path="exportFolderPath"/>
-      </section>
+
+      <template v-if="mode.value === TransformModeEnum.jsonToExcel">
+        <!-- 選擇資料夾 -->
+        <section class="relative mb-8">
+          <h4 class="mb-2 text-2xl">Main Folder</h4>
+          <div class="pl-4 mb-3 border-l-2 border-black bg-slate-100">
+            don't choose desktop
+            or folder without files inside
+          </div>
+          <SelectorFolder 
+            v-model:path="folderPath"
+            v-model:errorMessage="folderPathError"
+          />
+          <div class="absolute mt-1 ml-2 text-red-500">
+            {{ folderPathError }}
+          </div>
+        </section>
+    
+        <!-- 選擇基準語系 -->
+        <section class="mb-8">
+          <h4 class="mb-2 text-2xl">Base Language</h4>
+          <div class="pl-4 mb-3 border-l-2 border-black bg-zinc-100">
+            Use this language as a reference
+          </div>
+          <SelectorTabs 
+            :tabList="langList"
+            v-model:tabs="baseLang"
+          />
+        </section>
+      </template>
+
+      <template v-else>
+        <div class="text-center">
+          maintaining...
+        </div>
+      </template>
     </main>
 
     <!-- 執行 -->
