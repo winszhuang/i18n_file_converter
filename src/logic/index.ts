@@ -11,8 +11,8 @@ export async function jsonToExcel(
 
   const workSheetList: WorkSheet<string>[] = []
   const jsonFileList = await readDirByPath(`${folderPath}/${mainLang}`)
-  if (!jsonFileList) {
-    alert(`folder ${folderPath}/${mainLang} does not have any json files`)
+  if (!jsonFileList || !jsonFileList.length) {
+    alert(`folder ${folderPath}/${mainLang} does not have any json files \n please remove this empty content folder`)
     return 
   }
 

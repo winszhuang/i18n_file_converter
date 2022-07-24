@@ -37,6 +37,7 @@ watchEffect(async () => {
   if (folderPath.value && folderPathError.value === '') {
     const list = await getLangListByFolderPath(folderPath.value)
     langList.value = list.map((item, index) => ({ key: item, value: index }))
+    baseLang.value = langList.value[0]
     return
   } else {
     langList.value = []
