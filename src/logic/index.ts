@@ -12,17 +12,17 @@ export async function jsonToExcel(
   const workSheetList: WorkSheet<string>[] = []
   const jsonFileList = await readDirByPath(`${folderPath}/${mainLang}`)
   if (!jsonFileList) {
-    console.warn('資料夾內檔案掃描有問題');
-    return
+    alert(`folder ${folderPath}/${mainLang} does not have any json files`)
+    return 
   }
 
-  for (const filePath of jsonFileList) {
-    const workSheetItem = await transToWorksheet(
-      filePath, 
-      folderPath, 
+  for (const fileName of jsonFileList) {
+    const workSheetItem = await transToWorksheet({
+      fileName, 
+      i18nFolderPath: folderPath, 
       tableHeader,
       mainLang
-    )
+    })
     workSheetList.push(workSheetItem)
   }
 

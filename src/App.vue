@@ -24,8 +24,13 @@ const execute = async () => {
   }
 
   const modeIndex = mode.value.value as TransformModeEnum
-  const result = await strategy[modeIndex]()
-  alert(result ? 'success' : 'fail')
+
+  try {
+    const result = await strategy[modeIndex]()
+    alert(result ? 'success' : 'fail')
+  } catch (error) {
+    alert((error as Error).message)
+  }
 }
 
 watchEffect(async () => {
@@ -81,7 +86,7 @@ watchEffect(async () => {
         <section class="mb-8">
           <h4 class="mb-2 text-2xl">Base Language</h4>
           <div class="pl-4 mb-3 border-l-2 border-black bg-zinc-100">
-            Use this language as a reference
+            Use this language folder as a reference
           </div>
           <SelectorTabs 
             :tabList="langList"
