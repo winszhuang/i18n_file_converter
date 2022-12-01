@@ -51,7 +51,7 @@
   ],
   "dependencies": {
     "@headlessui/vue": "^1.6.7",
-    "@vueuse/core": "^8.9.4",
+    "@vueuse/core": "^9.6.0",
     "node-xlsx": "^0.21.0"
   }
 }
